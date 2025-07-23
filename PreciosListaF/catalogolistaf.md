@@ -1,58 +1,75 @@
-# 📦 Catálogo Dinámico Celucenter - Lista F
+# 📦 Catálogo Dinámico Celucenter - Lista F (CriShop)
 
-Esta segunda versión del catálogo usa la misma estructura HTML y las mismas imágenes de productos en GitHub, pero toma los precios y características desde una **nueva pestaña** del Google Sheets: `"Lista F"`.
+Este catálogo dinámico genera una galería visual de productos a partir de una hoja de cálculo de Google Sheets (pestaña: **Lista F**) y las imágenes públicas alojadas en GitHub.
 
 ---
 
 ## 🌐 Fuente de datos
 
-Esta versión utiliza:
-
 - 📄 **Google Sheets:**  
   [https://docs.google.com/spreadsheets/d/1YGFRcNmZ6bXe7L2hFS1w8YVkWXJVkyn46ILx0ki3uCM](https://docs.google.com/spreadsheets/d/1YGFRcNmZ6bXe7L2hFS1w8YVkWXJVkyn46ILx0ki3uCM)
 
-- 📑 **Pestaña:** `"Lista F"`
+- 📑 **Pestaña usada:** `"Lista F"`
 
 - 🔗 **API JSON (opensheet):**  
-
 
 ---
 
 ## 🖼️ Imágenes
 
-Las imágenes están alojadas en:
+Las imágenes están alojadas en el repositorio GitHub:
 
-👉 [Repositorio GitHub](https://github.com/piztian/Top-0/tree/main/pics)
+👉 [https://github.com/piztian/Top-0/tree/main/pics](https://github.com/piztian/Top-0/tree/main/pics)
 
-Cada fila del catálogo debe tener la columna `url_imagen` apuntando al enlace directo como:
+Cada entrada debe tener su campo `url_imagen` apuntando a la ruta pública:
 
-
----
-
-## 🔧 Columnas esperadas en “Lista F”
-
-| Columna       | Descripción                                |
-|---------------|--------------------------------------------|
-| archivo       | Nombre del archivo de imagen (ej. `Moto G24.jpg`) |
-| url_imagen    | URL directa a la imagen                    |
-| Precio        | Precio visible en la etiqueta              |
-| Caracteristicas | Descripción corta del equipo              |
 
 ---
 
-## 🧪 Fragmento de código JS modificado
+## 📋 Columnas esperadas
 
-Solo cambia el `fetch()` del HTML por este:
+La hoja `"Lista F"` debe tener las siguientes columnas:
+
+| Columna         | Uso en HTML                     |
+|------------------|-------------------------------|
+| archivo          | Nombre del archivo de imagen  |
+| url_imagen       | Ruta de la imagen en GitHub   |
+| Precio           | Texto que se muestra en la etiqueta de precio |
+| Caracteristicas  | Descripción del producto       |
+
+---
+
+## 🧠 Funcionamiento del script
 
 ```js
-fetch("https://opensheet.elk.sh/1YGFRcNmZ6bXe7L2hFS1w8YVkWXJVkyn46ILx0ki3uCM/Lista%20F")
+fetch("https://opensheet.elk.sh/.../Lista%20F")
+  .then(response => response.json())
+  .then(data => {
+    // Crea tarjetas HTML dinámicamente
+    data.forEach(item => {
+      const html = `
+        <div class="card">
+          <img src="${item.url_imagen}" alt="${item.archivo}">
+          <div class="price">${item.Precio}</div>
+          <div class="info">
+            <div class="brand">${item.archivo.split(' ')[0]}</div>
+            <div class="model">${item.archivo.replace('.jpg','')}</div>
+            <div class="specs">${item.Caracteristicas}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById("catalogo").insertAdjacentHTML("beforeend", html);
+    });
+  });
 ✅ Ventajas
+Puedes actualizar precios y textos desde Google Sheets sin tocar código.
 
-## Puedes cambiar precios sin tocar el HTML. ## 
+Puedes controlar el orden de aparición de productos simplemente cambiando el orden en la hoja.
 
-Puedes generar diferentes catálogos con solo duplicar el fetch() y usar distintas pestañas del mismo Google Sheets.
+Ideal para catálogos ligeros conectados a inventarios públicos.
 
-Centralizas imágenes en GitHub y datos en la nube.
+🔐 Requisitos
+La hoja debe estar publicada en la web:
+Archivo → Compartir → Publicar en la web
 
-🧠 Tip
-Puedes duplicar el mismo HTML, solo cambiando el nombre de la pestaña en el fetch, y ya tienes catálogos independientes para distintas campañas o promociones.
+Las imágenes deben ser accesibles públicamente desde GitHub o similar.
