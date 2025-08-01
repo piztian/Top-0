@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle Equipo CriShop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ececec;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      padding: 20px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .titulo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .precio {
+      color: #e60023;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .caracteristicas {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="detalle">
+    <div class="titulo">🔍 Detalle del equipo CriShop</div>
+    <!-- Aquí se inserta el contenido dinámicamente -->
+  </div>
+
+  <script>
+    // 📥 Obtener el parámetro del modelo desde la URL
+    const params = new URLSearchParams(window.location.search);
+    const modelo = params.get("modelo");
+
+    // 🔗 Llamada a la hoja de cálculo publicada
+    fetch("https://opensheet.elk.sh/1YGFRcNmZ6bXe7L2hFS1w8YVkWXJVkyn46ILx0ki3uCM/Lista%20F")
+      .then(res => res.json())
+      .then(data => {
+        const item = data.find(p => p.archivo.replace('.jpg','') === modelo);
+
+        if (!item) {
+          document.getElementById("detalle").innerHTML = "<p>No se encontró el equipo solicitado.</p>";
+          return;
+        }
+
+        const html = `
+          <img src="${item.url_imagen}" alt="${item.archivo}">
+          <div class="precio">${item.Precio}</div>
+          <div class="caracteristicas">${item.Caracteristicas}</div>
+        `;
+
+        document.getElementById("detalle").innerHTML += html;
+      });
+  </script>
+</body>
+</html>
