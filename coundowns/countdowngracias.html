@@ -1,0 +1,163 @@
+<div id="thanks-wrap" style="max-width:1100px;margin:24px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;position:relative">
+  <style>
+    /* ===== Fondo otoñal ===== */
+    #thanks-wrap{
+      background: radial-gradient(1200px 600px at 50% -10%, #41210a 0%, #251306 45%, #140a04 100%);
+      border-radius:16px; padding:28px 18px; overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.5);
+    }
+
+    /* ===== Hojas cayendo ===== */
+    .leaves{position:absolute;inset:0;pointer-events:none;opacity:.9;z-index:1}
+    .leaf{
+      position:absolute; top:-24px; width:16px; height:16px;
+      background: radial-gradient(circle at 30% 30%, #fff3, #ffb300 55%, #e65100 100%);
+      transform: rotate(var(--rot,0deg));
+      clip-path: polygon(50% 0%, 63% 10%, 75% 25%, 80% 45%, 74% 65%, 60% 82%, 50% 100%, 40% 82%, 26% 65%, 20% 45%, 25% 25%, 37% 10%);
+      filter: drop-shadow(0 0 8px rgba(255,153,0,.45));
+      animation: fall linear var(--dur) var(--delay) infinite;
+      left: var(--x);
+    }
+    @keyframes fall{
+      0%{ transform: translate3d(0,-24px,0) rotate(var(--rot,0deg)) }
+      100%{ transform: translate3d(var(--drift,50px), 110vh,0) rotate(calc(var(--rot,0deg) + 240deg)) }
+    }
+
+    /* ===== Contenido ===== */
+    .t-inner{position:relative; z-index:2; text-align:center}
+    .badge{
+      display:inline-block; padding:6px 14px; border-radius:999px;
+      background:linear-gradient(90deg,#ffb300,#ff6f00);
+      color:#2a1100; font-weight:800; letter-spacing:.5px; font-size:12px; text-transform:uppercase;
+      box-shadow:0 0 18px rgba(255,179,0,.35), inset 0 0 10px rgba(255,255,255,.3);
+    }
+    .title{
+      font-size:clamp(24px,3.2vw,36px); margin:14px 0 6px; font-weight:900;
+      text-shadow:0 0 18px rgba(255,179,0,.35), 0 0 4px rgba(255,120,0,.4);
+    }
+    .subtitle{opacity:.9; margin-bottom:22px}
+    .hl{color:#ffb300}
+
+    .timer{
+      display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:14px; justify-content:center;
+      max-width:820px; margin:0 auto 10px;
+    }
+    .unit{
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      border:1px solid rgba(255,179,0,.28);
+      border-radius:16px; padding:16px 10px;
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 0 18px rgba(255,179,0,.12), 0 10px 20px rgba(0,0,0,.25);
+    }
+    .num{font-size:clamp(28px,5.5vw,46px); font-weight:900}
+    .lab{opacity:.85; font-size:12px; letter-spacing:.8px; text-transform:uppercase; margin-top:6px}
+
+    .cta{margin-top:18px; font-size:14px; opacity:.95}
+
+    @media (max-width:640px){ .timer{grid-template-columns:repeat(2,1fr)} }
+  </style>
+
+  <!-- Hojas -->
+  <div class="leaves" id="leaves-layer" aria-hidden="true"></div>
+
+  <div class="t-inner">
+    <span class="badge">Cuenta regresiva</span>
+    <h2 class="title">🦃 Día de Acción de Gracias llega en…</h2>
+    <div class="subtitle">Listos para agradecer y <span class="hl">compartir</span> en familia.</div>
+
+    <div class="timer" id="thanks-timer">
+      <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+      <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+      <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Minutos</div></div>
+      <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Segundos</div></div>
+    </div>
+
+    <div class="cta" id="thanks-cta">Contando para el <b>cuarto jueves de noviembre</b> a las 00:00.</div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      /* ===== Cálculo: cuarto jueves de noviembre (cada año) ===== */
+      function nextThanksgiving(){
+        const now = new Date();
+        let y = now.getFullYear();
+        const nov1 = new Date(y, 10, 1);              // 10 = noviembre (0-index)
+        const w = nov1.getDay();                      // 0=Dom … 4=Jue …
+        const daysToFirstThu = (4 - w + 7) % 7;       // jueves = 4
+        const firstThu = new Date(y, 10, 1 + daysToFirstThu);
+        const fourthThu = new Date(firstThu.getFullYear(), firstThu.getMonth(), firstThu.getDate() + 21);
+        // Si ya pasó este año, calcula el del siguiente
+        if (now >= new Date(fourthThu.getFullYear(), 10, fourthThu.getDate(), 0,0,0,0)) {
+          y = y + 1;
+          const nov1b = new Date(y, 10, 1);
+          const wb = nov1b.getDay();
+          const dFirst = (4 - wb + 7) % 7;
+          const firstThub = new Date(y, 10, 1 + dFirst);
+          return new Date(firstThub.getFullYear(), firstThub.getMonth(), firstThub.getDate() + 21, 0,0,0,0);
+        }
+        return new Date(fourthThu.getFullYear(), fourthThu.getMonth(), fourthThu.getDate(), 0,0,0,0);
+      }
+
+      /* ===== Helpers ===== */
+      const $ = (s, c=document)=>c.querySelector(s);
+      const pad = n => String(n).padStart(2,'0');
+      function parts(ms){
+        const total = Math.max(0, Math.floor(ms/1000));
+        return {
+          days: Math.floor(total/86400),
+          hrs:  Math.floor((total%86400)/3600),
+          mins: Math.floor((total%3600)/60),
+          secs: total%60
+        };
+      }
+      function render(target){
+        const box = $("#thanks-timer"); if(!box) return;
+        const now = new Date(); const d = parts(target - now);
+        box.querySelector("[data-part='days']").textContent  = d.days;
+        box.querySelector("[data-part='hours']").textContent = pad(d.hrs);
+        box.querySelector("[data-part='mins']").textContent  = pad(d.mins);
+        box.querySelector("[data-part='secs']").textContent  = pad(d.secs);
+        if (target - now <= 0){
+          $(".title").textContent = "🦃 ¡Feliz Día de Acción de Gracias!";
+          $("#thanks-cta").innerHTML = "Agradece, comparte y disfruta. 🍽️";
+          clearInterval(window.__thanksTick__);
+        }
+      }
+
+      /* ===== Hojas animadas ===== */
+      function spawnLeaves(){
+        const layer = $("#leaves-layer"); if(!layer) return;
+        const COUNT = 72; const vw = Math.max(360, window.innerWidth);
+        for (let i=0;i<COUNT;i++){
+          const el = document.createElement("i");
+          el.className = "leaf";
+          const x = Math.random()*vw + "px";
+          const dur = (Math.random()*6 + 8).toFixed(2) + "s"; // 8–14s
+          const delay = (-Math.random()*8).toFixed(2) + "s";
+          const drift = (Math.random()*90 - 45) + "px";
+          const rot = (Math.random()*180 - 90) + "deg";
+          el.style.setProperty("--x", x);
+          el.style.setProperty("--dur", dur);
+          el.style.setProperty("--delay", delay);
+          el.style.setProperty("--drift", drift);
+          el.style.setProperty("--rot", rot);
+          // tamaño aleatorio
+          const sz = (Math.random()*10 + 12).toFixed(0); // 12–22px
+          el.style.width = sz + "px"; el.style.height = sz + "px";
+          layer.appendChild(el);
+        }
+      }
+
+      /* ===== Init (compatible con Bitrix) ===== */
+      document.addEventListener("DOMContentLoaded", ()=>{
+        const target = nextThanksgiving(); // ej. 2025-11-27 00:00
+        const y = target.getFullYear();
+        const mm = "noviembre";
+        $("#thanks-cta").innerHTML = `Contando para el <b>cuarto jueves de ${mm} de ${y}</b> a las 00:00.`;
+        spawnLeaves();
+        render(target);
+        window.__thanksTick__ = setInterval(()=>render(target), 1000);
+      });
+    })();
+  </script>
+</div>
