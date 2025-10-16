@@ -1,0 +1,183 @@
+<div id="events-carousel" style="max-width:100%;overflow:hidden;padding:24px 0;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;">
+  <style>
+    #events-carousel {
+      background: radial-gradient(1000px 600px at 50% -10%, #0a0f1c 0%, #000814 80%);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      position: relative;
+    }
+
+    .carousel-head {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .carousel-head .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg,#00bfff,#00e5ff);
+      color: #001b2e;
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      box-shadow: 0 0 18px rgba(129,212,250,.35);
+    }
+    .carousel-head h2 {
+      font-size: clamp(24px,3vw,36px);
+      font-weight: 900;
+      margin: 10px 0 4px;
+      text-shadow: 0 0 14px rgba(0,200,255,.35);
+    }
+    .carousel-head p {
+      opacity: .85;
+      margin-bottom: 12px;
+    }
+
+    /* ======= Carrusel ======= */
+    .events-scroll {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 10px 20px 30px;
+    }
+    .events-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+    .events-scroll::-webkit-scrollbar-thumb {
+      background: #00bfff55;
+      border-radius: 10px;
+    }
+
+    /* ======= Cards ======= */
+    .event-card {
+      flex: 0 0 280px;
+      background: linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 18px;
+      padding: 16px 12px;
+      box-shadow: inset 0 0 20px rgba(255,255,255,.06), 0 10px 20px rgba(0,0,0,.25);
+      text-align: center;
+      position: relative;
+    }
+    .event-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .event-date {
+      font-size: 13px;
+      opacity: .85;
+      margin-bottom: 10px;
+    }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 8px;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .unit {
+      border-radius: 14px;
+      padding: 10px 8px;
+      background: linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .num {font-size: 24px;font-weight: 900;}
+    .lab {font-size: 11px;opacity:.8;text-transform:uppercase;margin-top:3px;}
+
+    .cta {margin-top:10px;font-size:13px;opacity:.9;}
+  </style>
+
+  <div class="carousel-head">
+    <span class="badge">Calendario de Eventos</span>
+    <h2>Fechas Especiales del Año</h2>
+    <p>Desliza → para ver todos los eventos en orden cronológico 🎉</p>
+  </div>
+
+  <div class="events-scroll" id="events-container"></div>
+
+  <script data-skip-moving="true">
+    (function(){
+      const $ = (s,c=document)=>c.querySelector(s);
+      const pad = n => String(n).padStart(2,'0');
+      const MONTHS_ES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+      function onReady(fn){
+        if(window.BX && typeof BX.ready==="function") BX.ready(fn);
+        else if(document.readyState!=="loading") fn();
+        else document.addEventListener("DOMContentLoaded",fn);
+      }
+
+      // ===== Fechas =====
+      const fixed=(y,m0,d,h=0,mi=0,s=0)=>new Date(y,m0,d,h,mi,s,0);
+      function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,L=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*L)/451);const month=Math.floor((h+L-7*m+114)/31)-1,day=((h+L-7*m+114)%31)+1;return new Date(y,month,day);}
+      const goodFriday=y=>{const e=easter(y);return new Date(y,e.getMonth(),e.getDate()-2,0,0,0,0);};
+      const thanksgiving=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),dFirst=(4-w+7)%7;return new Date(y,10,1+dFirst+21,0,0,0,0);};
+      const dayAfter=(dt,n=1)=>new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()+n,0,0,0,0);
+      const nextMondayAfter=dt=>{const dow=dt.getDay();const n=(8-dow)%7;return dayAfter(dt,n);};
+      const buenFin=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),firstFri=(5-w+7)%7+1;return new Date(y,10,firstFri+14,0,0,0,0);};
+
+      const EVENTS = [
+        {emoji:"💖", name:"San Valentín", date:y=>fixed(y,1,14)},
+        {emoji:"✝️", name:"Viernes Santo", date:y=>goodFriday(y)},
+        {emoji:"💐", name:"Día de las Madres", date:y=>fixed(y,4,10)},
+        {emoji:"🎃", name:"Halloween", date:y=>fixed(y,9,31)},
+        {emoji:"💀", name:"Día de Muertos", date:y=>fixed(y,10,2)},
+        {emoji:"🇲🇽", name:"El Buen Fin", date:y=>buenFin(y)},
+        {emoji:"🦃", name:"Día de Gracias", date:y=>thanksgiving(y)},
+        {emoji:"🛍️", name:"Black Friday", date:y=>dayAfter(thanksgiving(y),1)},
+        {emoji:"💻", name:"Cyber Monday", date:y=>nextMondayAfter(thanksgiving(y))},
+        {emoji:"🎄", name:"Navidad", date:y=>fixed(y,11,25)},
+        {emoji:"🎆", name:"Fin de Año", date:y=>new Date(y,11,31,23,59,59,0)}
+      ];
+
+      const parts = ms => {
+        const total=Math.max(0,Math.floor(ms/1000));
+        return {d:Math.floor(total/86400),h:Math.floor((total%86400)/3600),m:Math.floor((total%3600)/60),s:total%60};
+      };
+      const nextOrNextYear=getForYear=>{
+        const now=new Date(); let y=now.getFullYear(); let t=getForYear(y);
+        if(now>=t) t=getForYear(y+1); return t;
+      };
+
+      function createCard(ev){
+        const now=new Date();
+        const target=nextOrNextYear(ev.date);
+        const card=document.createElement("div");
+        card.className="event-card";
+        card.innerHTML=`
+          <h3>${ev.emoji} ${ev.name}</h3>
+          <div class="event-date">${target.getDate()} de ${MONTHS_ES[target.getMonth()]} ${target.getFullYear()}</div>
+          <div class="timer">
+            <div class="unit"><div class="num" data-part="d">--</div><div class="lab">Días</div></div>
+            <div class="unit"><div class="num" data-part="h">--</div><div class="lab">Horas</div></div>
+            <div class="unit"><div class="num" data-part="m">--</div><div class="lab">Min</div></div>
+            <div class="unit"><div class="num" data-part="s">--</div><div class="lab">Seg</div></div>
+          </div>
+          <div class="cta">Contando para ${ev.name}</div>
+        `;
+
+        function tick(){
+          const p=parts(target-now);
+          card.querySelector('[data-part="d"]').textContent=p.d;
+          card.querySelector('[data-part="h"]').textContent=pad(p.h);
+          card.querySelector('[data-part="m"]').textContent=pad(p.m);
+          card.querySelector('[data-part="s"]').textContent=pad(p.s);
+        }
+        tick();
+        setInterval(()=>tick(),1000);
+        return card;
+      }
+
+      onReady(()=>{
+        const container=$("#events-container");
+        const ordered=EVENTS.map(e=>({ ...e, next: nextOrNextYear(e.date) }))
+                             .sort((a,b)=>a.next-b.next);
+        ordered.forEach(ev=>container.appendChild(createCard(ev)));
+      });
+    })();
+  </script>
+</div>
