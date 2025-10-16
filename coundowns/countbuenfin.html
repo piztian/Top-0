@@ -1,0 +1,132 @@
+<div id="buenfin-wrap" style="max-width:1100px;margin:24px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;position:relative">
+  <style>
+    /* ===== Fondo ===== */
+    #buenfin-wrap{
+      background: radial-gradient(1200px 600px at 50% -10%, #200, #000 60%, #000 100%);
+      border-radius:16px;padding:28px 18px;overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.55);
+    }
+
+    /* ===== Destellos ===== */
+    .sparks{position:absolute;inset:0;pointer-events:none;opacity:.8}
+    .spark{
+      position:absolute;top:-10px;width:3px;height:3px;background:#ff3333;
+      border-radius:50%;filter:drop-shadow(0 0 8px #ff0000);
+      animation:fall linear var(--dur)var(--delay)infinite;left:var(--x)
+    }
+    @keyframes fall{
+      0%{transform:translateY(-10px)}
+      100%{transform:translateY(110vh)scale(.3)}
+    }
+
+    /* ===== Contenido ===== */
+    .bf-inner{position:relative;z-index:2;text-align:center}
+    .badge{
+      display:inline-block;padding:6px 14px;border-radius:999px;
+      background:linear-gradient(90deg,#ff1744,#ff9100);
+      color:#1a0000;font-weight:800;letter-spacing:.5px;font-size:12px;text-transform:uppercase;
+      box-shadow:0 0 20px rgba(255,0,0,.35),inset 0 0 10px rgba(255,255,255,.35);
+    }
+    .title{
+      font-size:clamp(24px,3.2vw,36px);margin:14px 0 6px;font-weight:900;
+      text-shadow:0 0 18px rgba(255,0,0,.35),0 0 4px rgba(255,120,0,.5);
+    }
+    .subtitle{opacity:.9;margin-bottom:22px}
+    .hl{color:#ff3d00}
+    .timer{
+      display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:14px;justify-content:center;
+      max-width:820px;margin:0 auto 10px;
+    }
+    .unit{
+      background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+      border:1px solid rgba(255,80,0,.35);
+      border-radius:16px;padding:16px 10px;
+      backdrop-filter:blur(4px);
+      box-shadow:inset 0 0 18px rgba(255,80,0,.15),0 10px 20px rgba(0,0,0,.25);
+    }
+    .num{font-size:clamp(28px,5.5vw,46px);font-weight:900}
+    .lab{opacity:.8;font-size:12px;letter-spacing:.8px;text-transform:uppercase;margin-top:6px}
+    .cta{margin-top:18px;font-size:14px;opacity:.95}
+    @media(max-width:640px){.timer{grid-template-columns:repeat(2,1fr)}}
+  </style>
+
+  <div class="sparks" id="sparks-layer"></div>
+
+  <div class="bf-inner">
+    <span class="badge">Cuenta regresiva</span>
+    <h2 class="title">🇲🇽 El Buen Fin 2025</h2>
+    <div class="subtitle">Las <span class="hl">mejores promociones</span> del año están por llegar 🔥</div>
+
+    <div class="timer" id="timer-buenfin">
+      <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+      <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+      <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Minutos</div></div>
+      <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Segundos</div></div>
+    </div>
+
+    <div class="cta" id="cta-buenfin">Contando para el <b>22 de noviembre de 2025</b> a las 00:00.</div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      const TARGET_MONTH=10; // noviembre (0-index)
+      const TARGET_DAY=22;
+      const $=(s,c=document)=>c.querySelector(s);
+      const pad=n=>String(n).padStart(2,"0");
+
+      function nextDate(){
+        const now=new Date();
+        let y=now.getFullYear();
+        let t=new Date(y,TARGET_MONTH,TARGET_DAY,0,0,0,0);
+        if(now>=t)t=new Date(y+1,TARGET_MONTH,TARGET_DAY,0,0,0,0);
+        return t;
+      }
+      function parts(ms){
+        const total=Math.max(0,Math.floor(ms/1000));
+        return{
+          days:Math.floor(total/86400),
+          hrs:Math.floor((total%86400)/3600),
+          mins:Math.floor((total%3600)/60),
+          secs:total%60
+        };
+      }
+      function updateTimer(target){
+        const box=$("#timer-buenfin"); if(!box)return;
+        const now=new Date();
+        const d=parts(target-now);
+        box.querySelector("[data-part='days']").textContent=d.days;
+        box.querySelector("[data-part='hours']").textContent=pad(d.hrs);
+        box.querySelector("[data-part='mins']").textContent=pad(d.mins);
+        box.querySelector("[data-part='secs']").textContent=pad(d.secs);
+        if(target-now<=0){
+          $(".title").innerHTML="🔥 ¡El Buen Fin ha comenzado!";
+          $("#cta-buenfin").innerHTML="Aprovecha las ofertas ahora mismo 🛍️";
+          clearInterval(window.__buenfinTick__);
+        }
+      }
+
+      function spawnSparks(){
+        const layer=$("#sparks-layer"); if(!layer)return;
+        const COUNT=120; const vw=Math.max(360,window.innerWidth);
+        for(let i=0;i<COUNT;i++){
+          const el=document.createElement("i");
+          el.className="spark";
+          const x=Math.random()*vw+"px";
+          const dur=(Math.random()*6+6).toFixed(2)+"s";
+          const delay=(-Math.random()*6).toFixed(2)+"s";
+          el.style.setProperty("--x",x);
+          el.style.setProperty("--dur",dur);
+          el.style.setProperty("--delay",delay);
+          layer.appendChild(el);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded",()=>{
+        spawnSparks();
+        const target=nextDate();
+        updateTimer(target);
+        window.__buenfinTick__=setInterval(()=>updateTimer(target),1000);
+      });
+    })();
+  </script>
+</div>
