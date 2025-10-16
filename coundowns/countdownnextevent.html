@@ -1,0 +1,178 @@
+<div id="next-event-wrap" style="max-width:900px;margin:32px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;">
+  <style>
+    #next-event-wrap{
+      background: radial-gradient(1000px 500px at 50% -10%, #0a0f1c 0%, #000814 80%);
+      border-radius:20px;
+      padding:28px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.6);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:6px 14px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#00bfff,#00e5ff);
+      color:#001b2e;
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.5px;
+      text-transform:uppercase;
+      box-shadow:0 0 18px rgba(129,212,250,.35);
+      margin-bottom:10px;
+    }
+
+    .title{
+      font-size:clamp(26px,3.5vw,42px);
+      font-weight:900;
+      margin-bottom:6px;
+      text-shadow:0 0 16px rgba(0,200,255,.35);
+    }
+
+    .subtitle{opacity:.9;margin-bottom:18px;font-size:15px;}
+
+    .timer{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      justify-content:center;
+      max-width:600px;
+      margin:0 auto;
+    }
+
+    .unit{
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      padding:14px 10px;
+      box-shadow:inset 0 0 18px rgba(255,255,255,.08);
+    }
+
+    .num{
+      font-size:clamp(28px,5vw,44px);
+      font-weight:900;
+    }
+
+    .lab{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+      opacity:.8;
+      margin-top:6px;
+    }
+
+    .cta{
+      margin-top:20px;
+      font-size:14px;
+      opacity:.95;
+    }
+
+    .glow{
+      position:absolute;
+      inset:-20%;
+      background:conic-gradient(from 0deg,#00e5ff,#ffd54f,#ff9100,#00e5ff);
+      opacity:.12;
+      filter:blur(50px);
+      animation:spin 10s linear infinite;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+
+  <div class="glow"></div>
+  <span class="badge">Próximo evento</span>
+  <div class="title" id="event-title">Cargando...</div>
+  <div class="subtitle" id="event-date">---</div>
+
+  <div class="timer" id="next-timer">
+    <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+    <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+    <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div>
+    <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div>
+  </div>
+
+  <div class="cta" id="event-cta"></div>
+
+  <script data-skip-moving="true">
+    (function(){
+      const $ = (s,c=document)=>c.querySelector(s);
+      const pad = n => String(n).padStart(2,'0');
+      const MONTHS_ES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+      // ---- Ready seguro para Bitrix ----
+      function onReady(fn){
+        if (window.BX && typeof BX.ready === "function") BX.ready(fn);
+        else if (document.readyState !== "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      }
+
+      // ---- Funciones de fecha ----
+      const fixed=(y,m0,d,h=0,mi=0,s=0)=>new Date(y,m0,d,h,mi,s,0);
+      const nextOrNextYear=getForYear=>{
+        const now=new Date(); let y=now.getFullYear(); let t=getForYear(y);
+        if(now>=t) t=getForYear(y+1); return t;
+      };
+
+      // Algoritmos especiales
+      function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,L=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*L)/451);const month=Math.floor((h+L-7*m+114)/31)-1,day=((h+L-7*m+114)%31)+1;return new Date(y,month,day);}
+      const goodFriday=y=>{const e=easter(y);return new Date(y,e.getMonth(),e.getDate()-2,0,0,0,0);};
+      const thanksgiving=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),dFirst=(4-w+7)%7;return new Date(y,10,1+dFirst+21,0,0,0,0);};
+      const dayAfter=(dt,n=1)=>new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()+n,0,0,0,0);
+      const nextMondayAfter=dt=>{const dow=dt.getDay();const n=(8-dow)%7;return dayAfter(dt,n);};
+      const buenFin=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),firstFri=(5-w+7)%7+1;return new Date(y,10,firstFri+14,0,0,0,0);};
+
+      // ---- Lista de eventos ----
+      const EVENTS = [
+        {name:"💖 San Valentín", date:y=>fixed(y,1,14)},
+        {name:"✝️ Viernes Santo", date:y=>goodFriday(y)},
+        {name:"💐 Día de las Madres", date:y=>fixed(y,4,10)},
+        {name:"🎃 Halloween", date:y=>fixed(y,9,31)},
+        {name:"💀 Día de Muertos", date:y=>fixed(y,10,2)},
+        {name:"🇲🇽 El Buen Fin", date:y=>buenFin(y)},
+        {name:"🛍️ Black Friday", date:y=>dayAfter(thanksgiving(y),1)},
+        {name:"💻 Cyber Monday", date:y=>nextMondayAfter(thanksgiving(y))},
+        {name:"🦃 Día de Gracias", date:y=>thanksgiving(y)},
+        {name:"🎄 Navidad", date:y=>fixed(y,11,25)},
+        {name:"🎆 Fin de Año", date:y=>new Date(y,11,31,23,59,59,0)}
+      ];
+
+      function humanDate(dt){
+        return `${dt.getDate()} de ${MONTHS_ES[dt.getMonth()]} de ${dt.getFullYear()} · ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+      }
+      function parts(ms){
+        const total=Math.max(0,Math.floor(ms/1000));
+        return {d:Math.floor(total/86400),h:Math.floor((total%86400)/3600),m:Math.floor((total%3600)/60),s:total%60};
+      }
+
+      function findNextEvent(){
+        const now=new Date();
+        const upcoming=EVENTS.map(e=>({name:e.name,target:nextOrNextYear(e.date)}))
+                              .sort((a,b)=>a.target-b.target)
+                              .find(ev=>ev.target>now);
+        return upcoming || EVENTS[0];
+      }
+
+      onReady(()=>{
+        const elTitle=$("#event-title"), elDate=$("#event-date"), elCTA=$("#event-cta");
+        const elTimer=$("#next-timer");
+        const ev=findNextEvent();
+        elTitle.textContent=ev.name;
+        elDate.textContent=humanDate(ev.target);
+        elCTA.textContent="Cuenta regresiva para este evento 🎯";
+
+        function tick(){
+          const now=new Date();
+          const p=parts(ev.target-now);
+          elTimer.querySelector('[data-part="days"]').textContent=p.d;
+          elTimer.querySelector('[data-part="hours"]').textContent=pad(p.h);
+          elTimer.querySelector('[data-part="mins"]').textContent=pad(p.m);
+          elTimer.querySelector('[data-part="secs"]').textContent=pad(p.s);
+          if(ev.target-now<=0){elCTA.innerHTML="🚀 ¡Llegó el día!"; setTimeout(()=>location.reload(),3000);}
+        }
+        tick(); setInterval(tick,1000);
+      });
+    })();
+  </script>
+</div>
