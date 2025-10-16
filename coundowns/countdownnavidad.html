@@ -1,0 +1,158 @@
+<div id="xmas-wrap" style="max-width:1100px;margin:24px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;position:relative">
+  <style>
+    /* ===== Fondo y nieve ===== */
+    #xmas-wrap{
+      background: radial-gradient(1200px 600px at 50% -10%, #113 0%, #071427 40%, #030911 100%);
+      border-radius:16px; padding:28px 18px; overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    .snow{position:absolute;inset:0;pointer-events:none;opacity:.6}
+    .snow i{
+      position:absolute; top:-10px; width:6px; height:6px; border-radius:50%;
+      background:rgba(255,255,255,.95); filter:drop-shadow(0 0 6px rgba(255,255,255,.6));
+      animation: fall linear var(--dur) var(--delay) infinite;
+      left:var(--x);
+    }
+    @keyframes fall{
+      0%{transform:translate3d(0,-10px,0)}
+      100%{transform:translate3d(var(--drift, 20px), 110vh,0)}
+    }
+
+    /* ===== Contenido ===== */
+    .xmas-inner{position:relative; z-index:2; text-align:center}
+    .badge{
+      display:inline-block; padding:6px 14px; border-radius:999px;
+      background:linear-gradient(90deg,#1de9b6,#00e5ff);
+      color:#00131f; font-weight:700; letter-spacing:.5px; font-size:12px; text-transform:uppercase;
+      box-shadow:0 0 20px rgba(0,229,255,.35), inset 0 0 10px rgba(255,255,255,.4);
+    }
+    .title{
+      font-size: clamp(24px, 3.2vw, 36px); margin:14px 0 6px; font-weight:800;
+      text-shadow: 0 0 18px rgba(0,229,255,.25);
+    }
+    .subtitle{opacity:.85; margin-bottom:22px}
+
+    .timer{
+      display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:14px; justify-content:center;
+      max-width:820px; margin:0 auto 10px;
+    }
+    .unit{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px; padding:16px 10px;
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 0 18px rgba(0,229,255,.08), 0 10px 20px rgba(0,0,0,.25);
+    }
+    .num{font-size: clamp(28px, 5.5vw, 46px); font-weight:900; letter-spacing:.5px}
+    .lab{opacity:.8; font-size:12px; letter-spacing:.8px; text-transform:uppercase; margin-top:6px}
+
+    .cta{margin-top:18px; font-size:14px; opacity:.9}
+    .hl{color:#00e5ff}
+
+    /* Responsivo */
+    @media (max-width:640px){
+      .timer{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+
+  <!-- Nieve generada por CSS -->
+  <div class="snow" aria-hidden="true" id="snow-layer"></div>
+
+  <div class="xmas-inner">
+    <span class="badge">Cuenta regresiva</span>
+    <h2 class="title">🎄 Navidad llega en…</h2>
+    <div class="subtitle">Prepárate para las <span class="hl">ofertas</span> y el espíritu navideño.</div>
+
+    <div class="timer" id="xmas-timer">
+      <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+      <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+      <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Minutos</div></div>
+      <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Segundos</div></div>
+    </div>
+
+    <div class="cta" id="xmas-cta">Contando para el <b>25 de diciembre</b> a las 00:00.</div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      // ===== Config =====
+      const TARGET_MONTH = 11; // 0=Ene ... 11=Dic
+      const TARGET_DAY   = 25; // 25 de diciembre
+      const TARGET_H     = 0, TARGET_M = 0, TARGET_S = 0;
+
+      // ===== Utilidades =====
+      const $ = (sel, ctx=document) => ctx.querySelector(sel);
+
+      function nextChristmas(){
+        const now = new Date();
+        let y = now.getFullYear();
+        // 25/dic 00:00:00 local
+        let t = new Date(y, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        if (now >= t) t = new Date(y + 1, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        return t;
+      }
+
+      function pad(n){ return String(n).padStart(2,'0'); }
+
+      function diffParts(ms){
+        const total = Math.max(0, Math.floor(ms/1000));
+        const days  = Math.floor(total / 86400);
+        const hrs   = Math.floor((total % 86400) / 3600);
+        const mins  = Math.floor((total % 3600) / 60);
+        const secs  = total % 60;
+        return {days, hrs, mins, secs};
+      }
+
+      function updateTimer(target){
+        const box = $('#xmas-timer'); if(!box) return;
+        const now = new Date();
+        const {days, hrs, mins, secs} = diffParts(target - now);
+        $('[data-part="days"]', box).textContent  = days;
+        $('[data-part="hours"]', box).textContent = pad(hrs);
+        $('[data-part="mins"]', box).textContent  = pad(mins);
+        $('[data-part="secs"]', box).textContent  = pad(secs);
+
+        if (target - now <= 0) {
+          $('.title').textContent = '🎁 ¡Feliz Navidad!';
+          $('#xmas-cta').innerHTML = 'Que la pases increíble ✨';
+          clearInterval(window.__xmasTick__);
+        }
+      }
+
+      // ===== Nieve ligera (pura CSS/DOM) =====
+      function spawnSnow(){
+        const layer = $('#snow-layer'); if(!layer) return;
+        const FLAKES = 80; const vw = Math.max(360, window.innerWidth);
+        for(let i=0;i<FLAKES;i++){
+          const dot = document.createElement('i');
+          const size = (Math.random()*4+2).toFixed(1); // 2–6px
+          const x = Math.random()*vw + 'px';
+          const dur = (Math.random()*6 + 6).toFixed(2) + 's'; // 6–12s
+          const delay = (-Math.random()*6).toFixed(2) + 's';
+          const drift = (Math.random()*60 - 30) + 'px';
+          dot.style.setProperty('--x', x);
+          dot.style.setProperty('--dur', dur);
+          dot.style.setProperty('--delay', delay);
+          dot.style.setProperty('--drift', drift);
+          dot.style.width = size + 'px';
+          dot.style.height = size + 'px';
+          layer.appendChild(dot);
+        }
+      }
+
+      // ===== Inicio =====
+      (window.BX ? BX.ready : (fn => document.addEventListener('DOMContentLoaded', fn)))(function(){
+        const target = nextChristmas();
+        // Mensaje inferior con año calculado
+        const year = target.getFullYear();
+        $('#xmas-cta').innerHTML = `Contando para el <b>25 de diciembre de ${year}</b> a las 00:00.`;
+        // Primer render inmediato
+        updateTimer(target);
+        // Tick
+        window.__xmasTick__ = setInterval(()=> updateTimer(target), 1000);
+        // Nieve
+        spawnSnow();
+      });
+    })();
+  </script>
+</div>
