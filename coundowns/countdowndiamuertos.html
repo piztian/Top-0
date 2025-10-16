@@ -1,0 +1,185 @@
+<div id="dm-wrap" style="max-width:1100px;margin:24px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;position:relative">
+  <style>
+    /* ===== Fondo y atmósfera ===== */
+    #dm-wrap{
+      background: radial-gradient(1200px 600px at 50% -10%, #2b0f4a 0%, #1a0d2f 45%, #0b0620 100%);
+      border-radius:16px; padding:28px 18px; overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+
+    /* ===== Papel picado (decoración superior) ===== */
+    .papel{position:absolute;inset:0 0 auto 0;height:54px;display:flex;gap:10px;justify-content:center;z-index:1;pointer-events:none}
+    .flag{
+      width:110px;height:42px;border-radius:6px 6px 0 0;position:relative;top:6px;
+      background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow:0 6px 12px rgba(0,0,0,.25), inset 0 0 18px rgba(255,179,0,.18);
+      backdrop-filter: blur(4px);
+    }
+    .flag::after{ /* perforaciones */
+      content:""; position:absolute; inset:10px; 
+      background:
+        radial-gradient(circle at 25% 30%, transparent 7px, rgba(255,255,255,.14) 8px) no-repeat,
+        radial-gradient(circle at 55% 55%, transparent 7px, rgba(255,255,255,.14) 8px) no-repeat,
+        radial-gradient(circle at 80% 30%, transparent 6px, rgba(255,255,255,.14) 7px) no-repeat;
+      background-size: 18px 18px, 22px 22px, 16px 16px;
+    }
+    .flag.orange{background:linear-gradient(180deg,#ffb300,#ff6f00)}
+    .flag.purple{background:linear-gradient(180deg,#8e24aa,#5e35b1)}
+    .flag.pink{background:linear-gradient(180deg,#ff4081,#f50057)}
+
+    /* ===== Pétalos cempasúchil ===== */
+    .petals{position:absolute;inset:0;pointer-events:none;opacity:.9;z-index:1}
+    .petal{
+      position:absolute; top:-20px; width:10px; height:14px; border-radius:60% 60% 60% 60% / 80% 80% 30% 30%;
+      background:radial-gradient(circle at 30% 30%, #fff3, #ff8c00 55%, #ff6f00 100%);
+      filter:drop-shadow(0 0 6px rgba(255,153,0,.55));
+      animation: fall linear var(--dur) var(--delay) infinite;
+      left:var(--x); transform:rotate(var(--rot, 0deg));
+    }
+    @keyframes fall{
+      0%{transform:translate3d(0,-20px,0) rotate(var(--rot,0deg))}
+      100%{transform:translate3d(var(--drift, 30px), 110vh,0) rotate(calc(var(--rot,0deg) + 180deg))}
+    }
+
+    /* ===== Contenido ===== */
+    .dm-inner{position:relative; z-index:2; text-align:center}
+    .badge{
+      display:inline-block; padding:6px 14px; border-radius:999px;
+      background:linear-gradient(90deg,#ffb300,#ff6f00);
+      color:#2f1300; font-weight:800; letter-spacing:.5px; font-size:12px; text-transform:uppercase;
+      box-shadow:0 0 20px rgba(255,179,0,.35), inset 0 0 10px rgba(255,255,255,.35);
+    }
+    .title{
+      font-size: clamp(24px, 3.2vw, 36px); margin:14px 0 6px; font-weight:900;
+      text-shadow: 0 0 18px rgba(255,179,0,.35), 0 0 4px rgba(255,179,0,.5);
+    }
+    .subtitle{opacity:.9; margin-bottom:22px}
+    .hl{color:#ffb300}
+
+    .timer{
+      display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:14px; justify-content:center;
+      max-width:820px; margin:0 auto 10px;
+    }
+    .unit{
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      border:1px solid rgba(255,179,0,.25);
+      border-radius:16px; padding:16px 10px;
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 0 18px rgba(255,179,0,.12), 0 10px 20px rgba(0,0,0,.25);
+    }
+    .num{font-size: clamp(28px, 5.5vw, 46px); font-weight:900; letter-spacing:.5px}
+    .lab{opacity:.85; font-size:12px; letter-spacing:.8px; text-transform:uppercase; margin-top:6px}
+
+    .cta{margin-top:18px; font-size:14px; opacity:.95}
+
+    /* Responsivo */
+    @media (max-width:640px){
+      .timer{grid-template-columns:repeat(2,1fr)}
+      .papel{gap:6px}
+      .flag{width:82px}
+    }
+  </style>
+
+  <!-- Papel picado -->
+  <div class="papel" aria-hidden="true">
+    <div class="flag orange"></div><div class="flag purple"></div><div class="flag pink"></div>
+    <div class="flag orange"></div><div class="flag purple"></div><div class="flag pink"></div>
+  </div>
+
+  <!-- Pétalos -->
+  <div class="petals" aria-hidden="true" id="petals-layer"></div>
+
+  <div class="dm-inner">
+    <span class="badge">Cuenta regresiva</span>
+    <h2 class="title">💀 Día de Muertos llega en…</h2>
+    <div class="subtitle">Honremos con flores de <span class="hl">cempasúchil</span> y grandes <span class="hl">ofertas</span>.</div>
+
+    <div class="timer" id="dm-timer">
+      <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+      <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+      <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Minutos</div></div>
+      <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Segundos</div></div>
+    </div>
+
+    <div class="cta" id="dm-cta">Contando para el <b>2 de noviembre</b> a las 00:00.</div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      // ===== Config (0=Ene … 10=Nov) =====
+      const TARGET_MONTH = 10;  // Noviembre
+      const TARGET_DAY   = 2;   // 2 de noviembre
+      const TARGET_H     = 0, TARGET_M = 0, TARGET_S = 0;
+
+      // ===== Helpers =====
+      const $ = (s, c=document)=>c.querySelector(s);
+      function nextDate(){
+        const now = new Date();
+        let y = now.getFullYear();
+        let t = new Date(y, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        if (now >= t) t = new Date(y + 1, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        return t;
+      }
+      const pad = n => String(n).padStart(2,'0');
+      function parts(ms){
+        const total = Math.max(0, Math.floor(ms/1000));
+        return {
+          days: Math.floor(total/86400),
+          hrs:  Math.floor((total%86400)/3600),
+          mins: Math.floor((total%3600)/60),
+          secs: total%60
+        };
+      }
+      function render(target){
+        const box = $('#dm-timer'); if(!box) return;
+        const now = new Date();
+        const d = parts(target - now);
+        $('[data-part="days"]', box).textContent  = d.days;
+        $('[data-part="hours"]', box).textContent = pad(d.hrs);
+        $('[data-part="mins"]', box).textContent  = pad(d.mins);
+        $('[data-part="secs"]', box).textContent  = pad(d.secs);
+        if (target - now <= 0){
+          $('.title').innerHTML = '🕯️ ¡Día de Muertos!';
+          $('#dm-cta').innerHTML = 'Recordemos con amor y luz. ✨';
+          clearInterval(window.__dmTick__);
+        }
+      }
+
+      // Pétalos animados
+      function spawnPetals(){
+        const layer = $('#petals-layer'); if(!layer) return;
+        const COUNT = 64; const vw = Math.max(360, window.innerWidth);
+        for(let i=0;i<COUNT;i++){
+          const el = document.createElement('i');
+          el.className = 'petal';
+          const w = (Math.random()*6 + 6).toFixed(1); // ancho 6–12px
+          const h = (Math.random()*8 + 10).toFixed(1); // alto 10–18px
+          const x = Math.random()*vw + 'px';
+          const dur = (Math.random()*7 + 7).toFixed(2) + 's'; // 7–14s
+          const delay = (-Math.random()*7).toFixed(2) + 's';
+          const drift = (Math.random()*80 - 40) + 'px';
+          const rot = (Math.random()*120 - 60) + 'deg';
+          el.style.width = w + 'px';
+          el.style.height = h + 'px';
+          el.style.setProperty('--x', x);
+          el.style.setProperty('--dur', dur);
+          el.style.setProperty('--delay', delay);
+          el.style.setProperty('--drift', drift);
+          el.style.setProperty('--rot', rot);
+          layer.appendChild(el);
+        }
+      }
+
+      // Init (compatible con Bitrix)
+      (window.BX ? BX.ready : (fn=>document.addEventListener('DOMContentLoaded', fn)))(function(){
+        const target = nextDate();
+        const year = target.getFullYear();
+        $('#dm-cta').innerHTML = `Contando para el <b>2 de noviembre de ${year}</b> a las 00:00.`;
+        render(target);
+        window.__dmTick__ = setInterval(()=>render(target), 1000);
+        spawnPetals();
+      });
+    })();
+  </script>
+</div>
