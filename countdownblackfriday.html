@@ -4,23 +4,32 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;}    /* ======= ESTILOS DE LA TARJETA DEL COUNTDOWN ======= */
-      .cd-card{background: linear-gradient(135deg, #0f0f0f, #1a1a1a); /* Fondo oscuro (puedes cambiar aquí los colores) */
+      .cd-card {
+      background: linear-gradient(135deg, #000000, #1a1a1a); /* Fondo negro degradado */
       border-radius: 12px;
       padding: 20px;
       min-width: 280px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);} /* Sombra (ajustar si cambias fondo) */
-      .cd-title{font-size: 16px; 
-      margin-bottom: 8px;}.badge{display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin-bottom: 6px;}
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);} /* Sombra (ajustar si cambias fondo) */
+      .cd-title {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #ffffff;}  /* Texto blanco */
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        margin-bottom: 6px;
+        background: #ff0000;   /* Fondo rojo intenso para el badge */
+        color: #ffffff;}
 
       /* ======= COLORES PARA CADA EVENTO (CAMBIA ESTOS SI NECESITAS) ======= */
       .halloween{background: #ff9100; color: #fff;} /* Color de fondo del badge para Halloween o evento */ /* Color del texto dentro del badge */
-      .cd-timer{font-size: 22px; 
-      font-weight: bold;
-      text-shadow: 0 0 6px #aaa;} /* Efecto de brillo */
+      .cd-timer {font-size: 22px;
+        font-weight: bold;
+        color: #ffffff; /* Blanco para el temporizador */
+        text-shadow: 0 0 6px #ff0000; /* Brillo rojo */
+} /* Efecto de brillo */
       .cd-note{margin-top: 20px;
       font-size: 15px; 
       color: #f0f0f0;} /* Texto aclaratorio */
