@@ -1,0 +1,153 @@
+<div id="hallo-wrap" style="max-width:1100px;margin:24px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff;position:relative">
+  <style>
+    /* ===== Fondo y atmósfera ===== */
+    #hallo-wrap{
+      background: radial-gradient(1200px 600px at 50% -10%, #2a0f3b 0%, #160926 40%, #0b0413 100%);
+      border-radius:16px; padding:28px 18px; overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+
+    /* ===== Murciélagos ===== */
+    .bats{position:absolute;inset:0;pointer-events:none;opacity:.9;z-index:1}
+    .bat{
+      position:absolute; top:-20px; font-size:18px; filter:drop-shadow(0 0 6px rgba(255,145,0,.55));
+      animation: fly linear var(--dur) var(--delay) infinite;
+      left:var(--x);
+    }
+    @keyframes fly{
+      0%{ transform: translate3d(0,-20px,0) rotate(0deg) }
+      50%{ transform: translate3d(var(--drift, 40px), 50vh,0) rotate(-10deg) }
+      100%{ transform: translate3d(calc(var(--drift, 40px)*2), 110vh,0) rotate(6deg) }
+    }
+
+    /* ===== Contenido ===== */
+    .hall-inner{position:relative; z-index:2; text-align:center}
+    .badge{
+      display:inline-block; padding:6px 14px; border-radius:999px;
+      background:linear-gradient(90deg,#ff9100,#ff4d00);
+      color:#210a00; font-weight:800; letter-spacing:.5px; font-size:12px; text-transform:uppercase;
+      box-shadow:0 0 20px rgba(255,120,0,.35), inset 0 0 10px rgba(255,255,255,.35);
+    }
+    .title{
+      font-size: clamp(24px, 3.2vw, 36px); margin:14px 0 6px; font-weight:900;
+      text-shadow: 0 0 18px rgba(255,120,0,.35), 0 0 4px rgba(255,120,0,.5);
+    }
+    .subtitle{opacity:.9; margin-bottom:22px}
+
+    .timer{
+      display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:14px; justify-content:center;
+      max-width:820px; margin:0 auto 10px;
+    }
+    .unit{
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      border:1px solid rgba(255,140,0,.25);
+      border-radius:16px; padding:16px 10px;
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 0 18px rgba(255,140,0,.12), 0 10px 20px rgba(0,0,0,.25);
+    }
+    .num{font-size: clamp(28px, 5.5vw, 46px); font-weight:900; letter-spacing:.5px}
+    .lab{opacity:.85; font-size:12px; letter-spacing:.8px; text-transform:uppercase; margin-top:6px}
+
+    .cta{margin-top:18px; font-size:14px; opacity:.95}
+    .hl{color:#ff9100}
+
+    /* Responsivo */
+    @media (max-width:640px){
+      .timer{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+
+  <!-- Murciélagos -->
+  <div class="bats" aria-hidden="true" id="bats-layer"></div>
+
+  <div class="hall-inner">
+    <span class="badge">Cuenta regresiva</span>
+    <h2 class="title">🎃 Halloween llega en…</h2>
+    <div class="subtitle">Prepara tus <span class="hl">ofertas espeluznantes</span> y disfraces.</div>
+
+    <div class="timer" id="hall-timer">
+      <div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div>
+      <div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div>
+      <div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Minutos</div></div>
+      <div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Segundos</div></div>
+    </div>
+
+    <div class="cta" id="hall-cta">Contando para el <b>31 de octubre</b> a las 00:00.</div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      // ===== Config (0=Ene … 9=Oct) =====
+      const TARGET_MONTH = 9;   // Octubre
+      const TARGET_DAY   = 31;  // 31 de octubre
+      const TARGET_H     = 0, TARGET_M = 0, TARGET_S = 0;
+
+      // ===== Helpers =====
+      const $ = (s, c=document)=>c.querySelector(s);
+
+      function nextHalloween(){
+        const now = new Date();
+        let y = now.getFullYear();
+        let t = new Date(y, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        if (now >= t) t = new Date(y + 1, TARGET_MONTH, TARGET_DAY, TARGET_H, TARGET_M, TARGET_S, 0);
+        return t;
+      }
+      function pad(n){ return String(n).padStart(2,'0'); }
+      function parts(ms){
+        const total = Math.max(0, Math.floor(ms/1000));
+        return {
+          days: Math.floor(total/86400),
+          hrs:  Math.floor((total%86400)/3600),
+          mins: Math.floor((total%3600)/60),
+          secs: total%60
+        };
+      }
+      function render(target){
+        const box = $('#hall-timer'); if(!box) return;
+        const now = new Date();
+        const d = parts(target - now);
+        $('[data-part="days"]', box).textContent  = d.days;
+        $('[data-part="hours"]', box).textContent = pad(d.hrs);
+        $('[data-part="mins"]', box).textContent  = pad(d.mins);
+        $('[data-part="secs"]', box).textContent  = pad(d.secs);
+        if (target - now <= 0){
+          $('.title').textContent = '🕸️ ¡Feliz Halloween!';
+          $('#hall-cta').innerHTML = 'Que tus ventas den <b>miedo</b> 👻';
+          clearInterval(window.__hallTick__);
+        }
+      }
+
+      // Murciélagos
+      function spawnBats(){
+        const layer = $('#bats-layer'); if(!layer) return;
+        const COUNT = 36; const vw = Math.max(360, window.innerWidth);
+        for(let i=0;i<COUNT;i++){
+          const el = document.createElement('span');
+          el.className = 'bat';
+          el.textContent = '🦇';
+          const size = (Math.random()*10 + 14).toFixed(0); // 14–24px
+          const x = Math.random()*vw + 'px';
+          const dur = (Math.random()*6 + 7).toFixed(2) + 's'; // 7–13s
+          const delay = (-Math.random()*7).toFixed(2) + 's';
+          const drift = (Math.random()*80 - 40) + 'px';
+          el.style.fontSize = size + 'px';
+          el.style.setProperty('--x', x);
+          el.style.setProperty('--dur', dur);
+          el.style.setProperty('--delay', delay);
+          el.style.setProperty('--drift', drift);
+          layer.appendChild(el);
+        }
+      }
+
+      // Init (compatible con Bitrix)
+      (window.BX ? BX.ready : (fn=>document.addEventListener('DOMContentLoaded', fn)))(function(){
+        const target = nextHalloween();
+        const year = target.getFullYear();
+        $('#hall-cta').innerHTML = `Contando para el <b>31 de octubre de ${year}</b> a las 00:00.`;
+        render(target);
+        window.__hallTick__ = setInterval(()=>render(target), 1000);
+        spawnBats();
+      });
+    })();
+  </script>
+</div>
