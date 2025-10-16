@@ -1,0 +1,91 @@
+<div style="max-width: 1000px; margin: 24px auto; font-family: 'Segoe UI', sans-serif; text-align: center; color: #fff;">
+  <style>
+    .countdowns {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    /* ======= ESTILOS DE LA TARJETA DEL COUNTDOWN ======= */
+    .cd-card {
+      background: linear-gradient(135deg, #001f3f, #003366); /* Fondo azul oscuro */
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 280px;
+      box-shadow: 0 0 20px rgba(0, 153, 255, 0.4); /* Sombra azul clara */
+    }
+
+    .cd-title {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-bottom: 6px;
+      background: #00bfff;   /* Fondo azul eléctrico */
+      color: #ffffff;
+    }
+
+    .cd-timer {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 0 6px #00bfff;
+    }
+
+    .cd-note {
+      margin-top: 20px;
+      font-size: 15px;
+      color: #f0f0f0;
+    }
+
+    .cd-today {
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff9977;
+    }
+
+    
+ </style>
+
+  <!-- CONTENEDOR DE COUNTDOWN -->
+  <div class="countdowns">
+    <div class="cd-card">
+      <div class="cd-title">
+        <span class="badge halloween">CIBER MONDAY</span><br>
+        <span>1 de DICIEMBRE</span>
+      </div>
+      <div class="cd-timer" id="timer-halloween">--d --:--:--</div>
+    </div>
+     <!-- nota debajo del contenedor -->
+  <div class="cd-note">Ese día con <strong>descuentos especiales</strong> en tu sucursal.</div>
+
+  <script data-skip-moving="true">
+      // Función para obtener la fecha objetivo
+    function getNextDate(month, day){const now = new Date();
+      let target = new Date(now.getFullYear(), month, day, 0, 0, 0);
+      if (now > target) target.setFullYear(target.getFullYear() + 1);
+      return target;}
+      // Formatea el tiempo restante
+    function formatTimeLeft(ms){if (ms <= 0) return '<span class="cd-today">¡Hoy!</span>';
+      const totalSec = Math.floor(ms / 1000);
+      const d = Math.floor(totalSec / 86400);
+      const h = String(Math.floor((totalSec % 86400) / 3600)).padStart(2, '0');
+      const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      const s = String(totalSec % 60).padStart(2, '0');
+      return `${d}d ${h}:${m}:${s}`;}
+    // Inicia el conteo regresivo
+    function startCountdown(id, targetDate){const el = document.getElementById(id);
+      if (!el) return;
+      function update(){const now = new Date();
+        const delta = targetDate - now;
+        el.innerHTML = formatTimeLeft(delta);}update();
+      setInterval(update, 1000);}(window.BX ? BX.ready : (fn => document.addEventListener('DOMContentLoaded', fn)))(function (){startCountdown("timer-halloween", getNextDate(12, 01));
+  startCountdown("timer-muertos", getNextDate(11, 15));});   // Noviembre = 10});
+  </script>
+</div>
