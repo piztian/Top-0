@@ -1,0 +1,113 @@
+<div id="seasons-wrap" style="max-width:1200px;margin:28px auto;font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif;color:#fff">
+  <style>
+    #seasons-wrap{background:radial-gradient(1400px 700px at 50% -10%, #101525 0%, #0a0f1c 50%, #060b15 100%);border-radius:18px;padding:26px 18px;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+    .head{text-align:center;margin-bottom:14px}
+    .badge{display:inline-block;padding:6px 14px;border-radius:999px;background:linear-gradient(90deg,#4dd0e1,#81d4fa);color:#00131f;font-weight:800;font-size:12px;letter-spacing:.5px;text-transform:uppercase;box-shadow:0 0 18px rgba(129,212,250,.35)}
+    .title{font-size:clamp(24px,3.2vw,36px);margin:12px 0 6px;font-weight:900;text-shadow:0 0 16px rgba(129,212,250,.25)}
+    .subtitle{opacity:.9;margin:0 10px 10px;text-align:center}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(260px,1fr))}
+    @media(min-width:980px){.grid{grid-template-columns:repeat(3,minmax(260px,1fr))}}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+    .card{position:relative;overflow:hidden;border-radius:16px;padding:16px 14px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 0 18px rgba(255,255,255,.06),0 10px 20px rgba(0,0,0,.25)}
+    .card h3{margin:0 0 6px;font-size:18px;font-weight:800}
+    .date-note{opacity:.85;font-size:12px;margin-bottom:10px}
+    .timer{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .unit{border-radius:14px;padding:12px 8px;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.14)}
+    .num{font-size:clamp(24px,4.5vw,38px);font-weight:900}
+    .lab{opacity:.85;font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-top:4px}
+    .cta{margin-top:10px;font-size:13px;opacity:.95}
+    .accent-xmas{box-shadow:inset 0 0 24px #00e5ff33}.accent-newyear{box-shadow:inset 0 0 24px #ffd54f33}.accent-hallo{box-shadow:inset 0 0 24px #ff910033}.accent-muertos{box-shadow:inset 0 0 24px #ffb30033}.accent-buenfin{box-shadow:inset 0 0 24px #ff3d0033}.accent-black{box-shadow:inset 0 0 24px #ef535033}.accent-cyber{box-shadow:inset 0 0 24px #00e5ff33}.accent-thanks{box-shadow:inset 0 0 24px #ffa72633}.accent-val{box-shadow:inset 0 0 24px #f0629233}.accent-gf{box-shadow:inset 0 0 24px #ab47bc33}
+    .glow{position:absolute;inset:-20%;opacity:.15;filter:blur(40px);background:conic-gradient(from 0deg,#00e5ff,#ffd54f,#ff9100,#00e5ff);animation:spin 12s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+
+  <div class="head">
+    <span class="badge">Fechas Especiales</span>
+    <div class="title">Temporadas y Promos del Año</div>
+    <div class="subtitle">Todos tus <b>countdowns</b> en un solo bloque. Se actualizan solos cada año.</div>
+  </div>
+
+  <div class="grid" id="seasons-grid">
+    <div class="card accent-val" data-event="san_valentin"><div class="glow"></div><h3>💖 San Valentín</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-gf" data-event="viernes_santo"><div class="glow"></div><h3>✝️ Viernes Santo</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-mom" data-event="dia_madres"><div class="glow"></div><h3>💐 Día de las Madres</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-hallo" data-event="halloween"><div class="glow"></div><h3>🎃 Halloween</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-muertos" data-event="dia_muertos"><div class="glow"></div><h3>💀 Día de Muertos</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-buenfin" data-event="buen_fin"><div class="glow"></div><h3>🇲🇽 El Buen Fin</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-black" data-event="black_friday"><div class="glow"></div><h3>🛍️ Black Friday</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-cyber" data-event="cyber_monday"><div class="glow"></div><h3>💻 Cyber Monday</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-thanks" data-event="accion_gracias"><div class="glow"></div><h3>🦃 Día de Acción de Gracias</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-xmas" data-event="navidad"><div class="glow"></div><h3>🎄 Navidad</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+    <div class="card accent-newyear" data-event="ano_nuevo"><div class="glow"></div><h3>🎆 Fin de Año</h3><div class="date-note" data-note></div><div class="timer"><div class="unit"><div class="num" data-part="days">--</div><div class="lab">Días</div></div><div class="unit"><div class="num" data-part="hours">--</div><div class="lab">Horas</div></div><div class="unit"><div class="num" data-part="mins">--</div><div class="lab">Min</div></div><div class="unit"><div class="num" data-part="secs">--</div><div class="lab">Seg</div></div></div><div class="cta" data-cta></div></div>
+  </div>
+
+  <script data-skip-moving="true">
+    (function(){
+      const $=(s,c=document)=>c.querySelector(s);
+      const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
+      const pad=n=>String(n).padStart(2,'0');
+      const MONTHS_ES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+      // --- Ready seguro para Bitrix ---
+      function onReady(fn){
+        if (window.BX && typeof BX.ready==="function") BX.ready(fn);
+        else if (document.readyState !== "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      }
+
+      // --- Utilidades de fechas ---
+      const fixed=(y,m0,d,h=0,mi=0,s=0)=>new Date(y,m0,d,h,mi,s,0);
+      const nextOrNextYear=getForYear=>{
+        const now=new Date(); let y=now.getFullYear(); let t=getForYear(y);
+        if(now>=t) t=getForYear(y+1); return t;
+      };
+      function easter(y){ // Meeus/Jones/Butcher
+        const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3);
+        const h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,L=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*L)/451);
+        const month=Math.floor((h+L-7*m+114)/31)-1,day=((h+L-7*m+114)%31)+1; return new Date(y,month,day);
+      }
+      const goodFriday=y=>{const e=easter(y);return new Date(y,e.getMonth(),e.getDate()-2,0,0,0,0);};
+      const thanksgiving=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),dFirst=(4-w+7)%7;return new Date(y,10,1+dFirst+21,0,0,0,0);};
+      const dayAfter=(dt,n=1)=>new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()+n,0,0,0,0);
+      const nextMondayAfter=dt=>{const dow=dt.getDay(); const n=(8-dow)%7; return dayAfter(dt,n);};
+      const buenFin=y=>{const nov1=new Date(y,10,1),w=nov1.getDay(),firstFri=(5-w+7)%7+1;return new Date(y,10,firstFri+14,0,0,0,0);};
+
+      const rules={
+        san_valentin:y=>fixed(y,1,14),
+        viernes_santo:y=>goodFriday(y),
+        dia_madres:y=>fixed(y,4,10),
+        halloween:y=>fixed(y,9,31),
+        dia_muertos:y=>fixed(y,10,2),
+        accion_gracias:y=>thanksgiving(y),
+        black_friday:y=>dayAfter(thanksgiving(y),1),
+        cyber_monday:y=>nextMondayAfter(thanksgiving(y)),
+        buen_fin:y=>buenFin(y),
+        navidad:y=>fixed(y,11,25),
+        ano_nuevo:y=>new Date(y,11,31,23,59,59,0)
+      };
+
+      const humanDate=dt=>`${dt.getDate()} de ${MONTHS_ES[dt.getMonth()]} de ${dt.getFullYear()} · ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+      const parts=ms=>{const t=Math.max(0,Math.floor(ms/1000));return{d:Math.floor(t/86400),h:Math.floor((t%86400)/3600),m:Math.floor((t%3600)/60),s:t%60};};
+
+      function initCard(card){
+        const key=card.getAttribute("data-event");
+        const target=nextOrNextYear(y=>rules[key](y));
+        const note=card.querySelector("[data-note]"); const cta=card.querySelector("[data-cta]");
+        note.textContent=humanDate(target);
+        cta.textContent='Contando hacia la fecha indicada.';
+        function tick(){
+          const now=new Date(); const p=parts(target-now);
+          card.querySelector('[data-part="days"]').textContent=p.d;
+          card.querySelector('[data-part="hours"]').textContent=pad(p.h);
+          card.querySelector('[data-part="mins"]').textContent=pad(p.m);
+          card.querySelector('[data-part="secs"]').textContent=pad(p.s);
+          if(target-now<=0) cta.innerHTML='🚀 ¡Llegó el día!';
+        }
+        tick();
+        return setInterval(tick,1000);
+      }
+
+      onReady(()=>{ $$('#seasons-grid .card').forEach(initCard); });
+    })();
+  </script>
+</div>
